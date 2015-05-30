@@ -5,31 +5,59 @@
 'use strict';
 
 var React = require('react-native');
+var { fetch } = require('fetch');
 var {
   AppRegistry,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } = React;
 
-var Counter = React.createClass({
-  render: function() {
+class Counter extends React.Component {
+  constructor() {
+    super();
+    this.state = { count: 0 };
+  }
+
+  inc() {
+    var newCount = this.state.count + 1;
+    this.setState({count: newCount});
+    fetch(
+      'https://api.conunter.io/?value=' + newCount,
+      { method: 'post' }
+    );
+  }
+
+  render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
+        <Text style={styles.value}>
+          {this.state.count}
         </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        <Button
+          title="Add +1"
+          onPress={() => this.inc()}
+        />
       </View>
     );
   }
-});
+}
+
+class Button extends React.Component {
+  render() {
+    var {title, ...props} = this.props;
+    return (
+      <TouchableOpacity {...props}>
+        <View style={styles.button}>
+          <Text style={styles.label}>
+            {title}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -37,17 +65,24 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    paddingBottom: 70,
   },
-  welcome: {
-    fontSize: 20,
+  value: {
+    fontSize: 100,
     textAlign: 'center',
     margin: 10,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  button: {
+    padding: 10,
+    borderRadius: 3,
+    backgroundColor: '#337ab7',
+    alignItems: 'center',
+    width: 200,
   },
+  label: {
+    color: 'white',
+    fontSize: 16,
+  }
 });
 
 AppRegistry.registerComponent('Counter', () => Counter);
